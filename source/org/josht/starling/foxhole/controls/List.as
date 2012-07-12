@@ -239,6 +239,9 @@ package org.josht.starling.foxhole.controls
 			{
 				this._dataProvider.onReset.add(dataProvider_onReset);
 			}
+			else{
+				this.dataViewPort.dataProvider = null;
+			}
 
 			//reset the scroll position because this is a drastic change and
 			//the data is probably completely different
@@ -368,6 +371,11 @@ package org.josht.starling.foxhole.controls
 		{
 			return this._onItemTouch;
 		}
+		
+		public function getRendererByIndex(value:int):IListItemRenderer {
+			return dataViewPort.getRendererByIndex(value);
+		}
+		
 		
 		/**
 		 * @private

@@ -27,7 +27,7 @@ package org.josht.starling.foxhole.controls.supportClasses
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
-
+	
 	import org.josht.starling.foxhole.controls.*;
 	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.core.PropertyProxy;
@@ -36,7 +36,7 @@ package org.josht.starling.foxhole.controls.supportClasses
 	import org.josht.starling.foxhole.layout.IVirtualLayout;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
-
+	
 	import starling.display.DisplayObject;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
@@ -235,6 +235,9 @@ package org.josht.starling.foxhole.controls.supportClasses
 			{
 				this._dataProvider.onChange.add(dataProvider_onChange);
 				this._dataProvider.onItemUpdate.add(dataProvider_onItemUpdate);
+			}
+			else{
+				this.refreshRenderers(false);
 			}
 			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
@@ -458,6 +461,12 @@ package org.josht.starling.foxhole.controls.supportClasses
 			this._selectedIndex = value;
 			this.invalidate(INVALIDATION_FLAG_SELECTED);
 			this._onChange.dispatch(this);
+		}
+		
+		public function getRendererByIndex(value:int):IListItemRenderer {
+			var item:Object = this._dataProvider.getItemAt(value);
+			var renderer:IListItemRenderer = IListItemRenderer(this._rendererMap[item]);
+			return renderer;
 		}
 		
 		protected var _onChange:Signal = new Signal(ListDataViewPort);
