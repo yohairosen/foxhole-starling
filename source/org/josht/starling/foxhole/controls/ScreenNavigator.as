@@ -50,6 +50,8 @@ package org.josht.starling.foxhole.controls
 		public function ScreenNavigator()
 		{
 			super();
+			this.addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+			this.addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler);
 		}
 
 		/**
@@ -316,6 +318,7 @@ package org.josht.starling.foxhole.controls
 			{
 				this._transitionIsActive = true;
 				this._previousScreenInTransition = this._activeScreen;
+				this._previousScreenInTransitionID = this._activeScreenID;
 				this.transition(this._previousScreenInTransition, null, transitionComplete);
 			}
 			this._screenEvents[this._activeScreenID] = null;
@@ -369,15 +372,7 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		override protected function initialize():void
-		{
-			this.stage.addEventListener(ResizeEvent.RESIZE, stage_resizeHandler);
-			addEventListener(Event.REMOVED_FROM_STAGE, removedFromStage);
-		}
 
-		/**
-		 * @private
-		 */
 		override protected function draw():void
 		{
 			var sizeInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_SIZE);
@@ -489,6 +484,22 @@ package org.josht.starling.foxhole.controls
 			}
 
 			return eventListener;
+		}
+
+		/**
+		 * @private
+		 */
+		protected function addedToStageHandler(event:Event):void
+		{
+			this.stage.addEventListener(ResizeEvent.RESIZE, stage_resizeHandler);
+		}
+
+		/**
+		 * @private
+		 */
+		protected function removedFromStageHandler(event:Event):void
+		{
+			this.stage.removeEventListener(ResizeEvent.RESIZE, stage_resizeHandler);
 		}
 
 		/**
