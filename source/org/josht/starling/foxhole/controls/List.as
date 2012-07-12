@@ -829,6 +829,10 @@ package org.josht.starling.foxhole.controls
 			this.scroller.stopScrolling();
 		}
 		
+		public function getRendererByIndex(value:int):IListItemRenderer {
+			return dataViewPort.getRendererByIndex(value);
+		}
+		
 		/**
 		 * @private
 		 */
