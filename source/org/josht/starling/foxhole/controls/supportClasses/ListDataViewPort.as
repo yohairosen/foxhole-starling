@@ -236,6 +236,10 @@ package org.josht.starling.foxhole.controls.supportClasses
 				this._dataProvider.onChange.add(dataProvider_onChange);
 				this._dataProvider.onItemUpdate.add(dataProvider_onItemUpdate);
 			}
+			else{
+				this.refreshRenderers(false);
+			}
+			
 			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
 		

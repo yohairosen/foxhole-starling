@@ -239,6 +239,9 @@ package org.josht.starling.foxhole.controls
 			{
 				this._dataProvider.onReset.add(dataProvider_onReset);
 			}
+			else{
+				this.dataViewPort.dataProvider = null;
+			}
 
 			//reset the scroll position because this is a drastic change and
 			//the data is probably completely different

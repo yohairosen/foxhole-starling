@@ -888,6 +888,11 @@ package org.josht.starling.foxhole.controls
 			{
 				this.iconImage.removeFromParent(true);
 			}
+			
+			
+			if(this.owner){
+				this._owner.onScroll.remove(owner_onScroll);
+			}
 
 			//the accessory may have come from outside of this class. it's up
 			//to that code to dispose of the accessory. in fact, if we disposed
