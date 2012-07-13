@@ -565,7 +565,7 @@ package org.josht.starling.foxhole.controls.supportClasses
 			var item:Object = this._dataProvider.getItemAt(value);
 			var renderer:IListItemRenderer = IListItemRenderer(this._rendererMap[item]);
 			return renderer;
-		}	 
+		}	
 		
 		protected function refreshItemRendererStyles():void
 		{
