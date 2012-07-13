@@ -561,12 +561,6 @@ package org.josht.starling.foxhole.controls.supportClasses
 			return IListItemRenderer(this._rendererMap[item]);
 		}
 		
-		public function getRendererByIndex(value:int):IListItemRenderer {
-			var item:Object = this._dataProvider.getItemAt(value);
-			var renderer:IListItemRenderer = IListItemRenderer(this._rendererMap[item]);
-			return renderer;
-		}
-		
 		protected function refreshItemRendererStyles():void
 		{
 			for each(var renderer:IListItemRenderer in this._activeRenderers)

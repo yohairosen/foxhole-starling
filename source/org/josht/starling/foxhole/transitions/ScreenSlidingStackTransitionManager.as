@@ -81,17 +81,6 @@ package org.josht.starling.foxhole.transitions
 			this._stack.length = 0;
 		}
 		
-		
-		public function clearFromStack(value:Class):void
-		{
-			var NewScreenType:Class = Object(value).constructor;
-			var stackIndex:int = this._stack.indexOf(NewScreenType);
-			
-			if(stackIndex > -1){
-				_stack.splice(stackIndex, 1);
-			}
-			
-		}
 		/**
 		 * @private
 		 */
