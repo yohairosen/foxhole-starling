@@ -25,8 +25,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 package org.josht.starling.foxhole.controls
 {
 	import flash.geom.Point;
-
+	
 	import org.josht.starling.foxhole.controls.renderers.DefaultListItemRenderer;
+	import org.josht.starling.foxhole.controls.renderers.IListItemRenderer;
 	import org.josht.starling.foxhole.controls.supportClasses.ListDataViewPort;
 	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.core.PropertyProxy;
@@ -36,7 +37,7 @@ package org.josht.starling.foxhole.controls
 	import org.josht.starling.foxhole.layout.VerticalLayout;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
-
+	
 	import starling.display.DisplayObject;
 	import starling.events.TouchEvent;
 

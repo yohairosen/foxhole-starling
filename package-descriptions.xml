@@ -12,6 +12,9 @@
 		<package name="org.josht.starling.foxhole.controls.popups"> 
 			<shortDescription><![CDATA[Managers for the display of pop-up sub-components.]]></shortDescription>
 		</package>
+		<package name="org.josht.starling.foxhole.controls.renderers"> 
+			<shortDescription><![CDATA[Data renderers for list controls.]]></shortDescription>
+		</package>
 		<package name="org.josht.starling.foxhole.core"> 
 			<shortDescription><![CDATA[Base classes and interfaces used by Foxhole.]]></shortDescription>
 		</package>
@@ -23,6 +26,9 @@
 		</package>
 		<package name="org.josht.starling.foxhole.layout"> 
 			<shortDescription><![CDATA[A variety of layout algorithms used to customize Foxhole controls and containers.]]></shortDescription>
+		</package>
+		<package name="org.josht.starling.foxhole.skins"> 
+			<shortDescription><![CDATA[Classes related to skinning in Foxhole.]]></shortDescription>
 		</package>
 		<package name="org.josht.starling.foxhole.text"> 
 			<shortDescription><![CDATA[Contains classes for working with displayed text in Foxhole.]]></shortDescription>

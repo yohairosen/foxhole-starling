@@ -29,7 +29,6 @@ package org.josht.starling.foxhole.controls
 	import flash.ui.Keyboard;
 
 	import org.josht.starling.display.ScrollRectManager;
-
 	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.core.PopUpManager;
 	import org.osflash.signals.ISignal;
@@ -1172,22 +1171,43 @@ package org.josht.starling.foxhole.controls
 			{
 				return;
 			}
-			const touch:Touch = event.getTouch(this.stage);
-			if(!touch || (this._touchPointID >= 0 && this._touchPointID != touch.id))
+
+			const touches:Vector.<Touch> = event.getTouches(this.stage);
+			if(touches.length == 0)
 			{
 				return;
 			}
-
-			if(touch.phase == TouchPhase.BEGAN)
+			if(this._touchPointID >= 0)
 			{
-				this._touchPointID = touch.id;
-			}
-			else if(this._touchPointID >= 0)
-			{
+				var touch:Touch;
+				for each(var currentTouch:Touch in touches)
+				{
+					if(currentTouch.id == this._touchPointID)
+					{
+						touch = currentTouch;
+						break;
+					}
+				}
+				if(!touch)
+				{
+					return;
+				}
 				if(touch.phase == TouchPhase.ENDED)
 				{
 					this._touchPointID = -1;
 					this.close();
+					return;
+				}
+			}
+			else
+			{
+				for each(touch in touches)
+				{
+					if(touch.phase == TouchPhase.BEGAN)
+					{
+						this._touchPointID = touch.id;
+						return;
+					}
 				}
 			}
 		}

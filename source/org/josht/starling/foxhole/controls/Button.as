@@ -29,6 +29,7 @@ package org.josht.starling.foxhole.controls
 	import org.josht.starling.display.ScrollRectManager;
 	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.core.IToggle;
+	import org.josht.starling.foxhole.core.PropertyProxy;
 	import org.josht.starling.foxhole.text.BitmapFontTextFormat;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
@@ -52,42 +53,42 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		protected static const STATE_UP:String = "up";
+		public static const STATE_UP:String = "up";
 		
 		/**
 		 * @private
 		 */
-		protected static const STATE_DOWN:String = "down";
+		public static const STATE_DOWN:String = "down";
 
 		/**
 		 * @private
 		 */
-		protected static const STATE_HOVER:String = "hover";
+		public static const STATE_HOVER:String = "hover";
 		
 		/**
 		 * @private
 		 */
-		protected static const STATE_DISABLED:String = "disabled";
+		public static const STATE_DISABLED:String = "disabled";
 		
 		/**
 		 * @private
 		 */
-		protected static const STATE_SELECTED_UP:String = "selectedUp";
+		public static const STATE_SELECTED_UP:String = "selectedUp";
 		
 		/**
 		 * @private
 		 */
-		protected static const STATE_SELECTED_DOWN:String = "selectedDown";
+		public static const STATE_SELECTED_DOWN:String = "selectedDown";
 
 		/**
 		 * @private
 		 */
-		protected static const STATE_SELECTED_HOVER:String = "selectedHover";
+		public static const STATE_SELECTED_HOVER:String = "selectedHover";
 
 		/**
 		 * @private
 		 */
-		protected static const STATE_SELECTED_DISABLED:String = "selectedDisabled";
+		public static const STATE_SELECTED_DISABLED:String = "selectedDisabled";
 		
 		/**
 		 * The icon will be positioned above the label.
@@ -184,6 +185,11 @@ package org.josht.starling.foxhole.controls
 		 * @private
 		 */
 		protected var _touchPointID:int = -1;
+
+		/**
+		 * @private
+		 */
+		protected var _isHoverSupported:Boolean = false;
 		
 		/**
 		 * @inheritDoc
@@ -590,6 +596,93 @@ package org.josht.starling.foxhole.controls
 		 * @private
 		 */
 		protected var _originalSkinHeight:Number = NaN;
+
+		/**
+		 * @private
+		 */
+		protected var _stateToSkinFunction:Function;
+
+		/**
+		 * Returns a skin for the current state.
+		 *
+		 * <p>The following function signature is expected:</p>
+		 * <pre>function(target:Button, state:Object, oldSkin:DisplayObject = null):DisplayObject</pre>
+		 */
+		public function get stateToSkinFunction():Function
+		{
+			return this._stateToSkinFunction;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set stateToSkinFunction(value:Function):void
+		{
+			if(this._stateToSkinFunction == value)
+			{
+				return;
+			}
+			this._stateToSkinFunction = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+
+		/**
+		 * @private
+		 */
+		protected var _stateToIconFunction:Function;
+
+		/**
+		 * Returns an icon for the current state.
+		 *
+		 * <p>The following function signature is expected:</p>
+		 * <pre>function(target:Button, state:Object, oldIcon:DisplayObject = null):DisplayObject</pre>
+		 */
+		public function get stateToIconFunction():Function
+		{
+			return this._stateToIconFunction;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set stateToIconFunction(value:Function):void
+		{
+			if(this._stateToIconFunction == value)
+			{
+				return;
+			}
+			this._stateToIconFunction = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+
+		/**
+		 * @private
+		 */
+		protected var _stateToTextFormatFunction:Function;
+
+		/**
+		 * Returns a text format for the current state.
+		 *
+		 * <p>The following function signature is expected:</p>
+		 * <pre>function(target:Button, state:Object, oldTextFormat:BitmapFontTextFormat = null):BitmapFontTextFormat</pre>
+		 */
+		public function get stateToTextFormatFunction():Function
+		{
+			return this._stateToTextFormatFunction;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set stateToTextFormatFunction(value:Function):void
+		{
+			if(this._stateToTextFormatFunction == value)
+			{
+				return;
+			}
+			this._stateToTextFormatFunction = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
 		
 		/**
 		 * @private
@@ -1816,6 +1909,61 @@ package org.josht.starling.foxhole.controls
 				this.flatten();
 			}
 		}
+
+		/**
+		 * @private
+		 */
+		private var _labelProperties:PropertyProxy = new PropertyProxy(labelProperties_onChange);
+
+		/**
+		 * A set of key/value pairs to be passed down to the buttons's label
+		 * instance. The label is a Foxhole Label control.
+		 *
+		 * <p>If the sub-component has its own sub-components, their properties
+		 * can be set too, using attribute <code>&#64;</code> notation. For example,
+		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
+		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
+		 * you can use the following syntax:</p>
+		 * <pre>list.scrollerProperties.&#64;verticalScrollBarProperties.&#64;thumbProperties.defaultSkin = new Image(texture);</pre>
+		 */
+		public function get labelProperties():Object
+		{
+			return this._labelProperties;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set labelProperties(value:Object):void
+		{
+			if(this._labelProperties == value)
+			{
+				return;
+			}
+			if(!value)
+			{
+				value = new PropertyProxy();
+			}
+			if(!(value is PropertyProxy))
+			{
+				const newValue:PropertyProxy = new PropertyProxy();
+				for(var propertyName:String in value)
+				{
+					newValue[propertyName] = value[propertyName];
+				}
+				value = newValue;
+			}
+			if(this._labelProperties)
+			{
+				this._labelProperties.onChange.remove(labelProperties_onChange);
+			}
+			this._labelProperties = PropertyProxy(value);
+			if(this._labelProperties)
+			{
+				this._labelProperties.onChange.add(labelProperties_onChange);
+			}
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
 		
 		/**
 		 * @private
@@ -2037,48 +2185,64 @@ package org.josht.starling.foxhole.controls
 		 */
 		protected function refreshSkin():void
 		{
-			this.currentSkin = null;
-			for each(var stateName:String in this._stateNames)
+			if(this._stateToSkinFunction != null)
 			{
-				var skinName:String = stateName + "Skin";
-				if(this._currentState == stateName)
+				const oldSkin:DisplayObject = this.currentSkin;
+				this.currentSkin = this._stateToSkinFunction(this, this._currentState, oldSkin);
+				if(this.currentSkin != oldSkin)
 				{
-					this.currentSkin = DisplayObject(this[skinName]);
-				}
-				else if(this[skinName])
-				{
-					DisplayObject(this[skinName]).visible = false;
-				}
-			}
-
-			if(!this.currentSkin)
-			{
-				if(this._isSelected)
-				{
-					this.currentSkin = this._defaultSelectedSkin;
-				}
-				else if(this._defaultSelectedSkin)
-				{
-					this._defaultSelectedSkin.visible = false;
-				}
-				if(!this.currentSkin)
-				{
-					this.currentSkin = this._defaultSkin;
-				}
-				else if(this._defaultSkin)
-				{
-					this._defaultSkin.visible = false;
+					this.removeChild(oldSkin, true);
+					if(this.currentSkin)
+					{
+						this.addChildAt(this.currentSkin, 0);
+					}
 				}
 			}
 			else
 			{
-				if(this._defaultSkin)
+				this.currentSkin = null;
+				for each(var stateName:String in this._stateNames)
 				{
-					this._defaultSkin.visible = false;
+					var skinName:String = stateName + "Skin";
+					if(this._currentState == stateName)
+					{
+						this.currentSkin = DisplayObject(this[skinName]);
+					}
+					else if(this[skinName])
+					{
+						DisplayObject(this[skinName]).visible = false;
+					}
 				}
-				if(this._defaultSelectedSkin)
+
+				if(!this.currentSkin)
 				{
-					this._defaultSelectedSkin.visible = false;
+					if(this._isSelected)
+					{
+						this.currentSkin = this._defaultSelectedSkin;
+					}
+					else if(this._defaultSelectedSkin)
+					{
+						this._defaultSelectedSkin.visible = false;
+					}
+					if(!this.currentSkin)
+					{
+						this.currentSkin = this._defaultSkin;
+					}
+					else if(this._defaultSkin)
+					{
+						this._defaultSkin.visible = false;
+					}
+				}
+				else
+				{
+					if(this._defaultSkin)
+					{
+						this._defaultSkin.visible = false;
+					}
+					if(this._defaultSelectedSkin)
+					{
+						this._defaultSelectedSkin.visible = false;
+					}
 				}
 			}
 
@@ -2093,48 +2257,64 @@ package org.josht.starling.foxhole.controls
 		 */
 		protected function refreshIcon():void
 		{
-			this.currentIcon = null;
-			for each(var stateName:String in this._stateNames)
+			if(this._stateToIconFunction != null)
 			{
-				var iconName:String = stateName + "Icon";
-				if(this._currentState == stateName)
+				const oldIcon:DisplayObject = this.currentIcon;
+				this.currentIcon = this._stateToIconFunction(this, this._currentState, oldIcon);
+				if(this.currentIcon != oldIcon)
 				{
-					this.currentIcon = DisplayObject(this[iconName]);
-				}
-				else if(this[iconName])
-				{
-					DisplayObject(this[iconName]).visible = false;
-				}
-			}
-			
-			if(!this.currentIcon)
-			{
-				if(this._isSelected)
-				{
-					this.currentIcon = this._defaultSelectedIcon;
-				}
-				else if(this._defaultSelectedIcon)
-				{
-					this._defaultSelectedIcon.visible = false;
-				}
-				if(!this.currentIcon)
-				{
-					this.currentIcon = this._defaultIcon;
-				}
-				else if(this._defaultIcon)
-				{
-					this._defaultIcon.visible = false;
+					this.removeChild(oldIcon, true);
+					if(this.currentIcon)
+					{
+						this.addChild(this.currentIcon);
+					}
 				}
 			}
 			else
 			{
-				if(this._defaultIcon)
+				this.currentIcon = null;
+				for each(var stateName:String in this._stateNames)
 				{
-					this._defaultIcon.visible = false;
+					var iconName:String = stateName + "Icon";
+					if(this._currentState == stateName)
+					{
+						this.currentIcon = DisplayObject(this[iconName]);
+					}
+					else if(this[iconName])
+					{
+						DisplayObject(this[iconName]).visible = false;
+					}
 				}
-				if(this._defaultSelectedIcon)
+
+				if(!this.currentIcon)
 				{
-					this._defaultSelectedIcon.visible = false;
+					if(this._isSelected)
+					{
+						this.currentIcon = this._defaultSelectedIcon;
+					}
+					else if(this._defaultSelectedIcon)
+					{
+						this._defaultSelectedIcon.visible = false;
+					}
+					if(!this.currentIcon)
+					{
+						this.currentIcon = this._defaultIcon;
+					}
+					else if(this._defaultIcon)
+					{
+						this._defaultIcon.visible = false;
+					}
+				}
+				else
+				{
+					if(this._defaultIcon)
+					{
+						this._defaultIcon.visible = false;
+					}
+					if(this._defaultSelectedIcon)
+					{
+						this._defaultSelectedIcon.visible = false;
+					}
 				}
 			}
 			
@@ -2149,17 +2329,33 @@ package org.josht.starling.foxhole.controls
 		 */
 		protected function refreshLabelStyles():void
 		{
-			const formatName:String = this._currentState + "TextFormat";
-			var format:BitmapFontTextFormat = BitmapFontTextFormat(this[formatName]);
-			if(!format)
+			for(var propertyName:String in this._labelProperties)
 			{
-				if(this._isSelected)
+				if(this.labelControl.hasOwnProperty(propertyName))
 				{
-					format = this._defaultSelectedTextFormat;
+					var propertyValue:Object = this._labelProperties[propertyName];
+					this.labelControl[propertyName] = propertyValue;
 				}
+			}
+
+			if(this._stateToTextFormatFunction != null)
+			{
+				var format:BitmapFontTextFormat = this._stateToTextFormatFunction(this, this._currentState);
+			}
+			else
+			{
+				const formatName:String = this._currentState + "TextFormat";
+				format = BitmapFontTextFormat(this[formatName]);
 				if(!format)
 				{
-					format = this._defaultTextFormat;
+					if(this._isSelected)
+					{
+						format = this._defaultSelectedTextFormat;
+					}
+					if(!format)
+					{
+						format = this._defaultTextFormat;
+					}
 				}
 			}
 			
@@ -2361,6 +2557,14 @@ package org.josht.starling.foxhole.controls
 				}
 			}
 		}
+
+		/**
+		 * @private
+		 */
+		protected function labelProperties_onChange(proxy:PropertyProxy, name:Object):void
+		{
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
 		
 		/**
 		 * @private
@@ -2371,54 +2575,99 @@ package org.josht.starling.foxhole.controls
 			{
 				return;
 			}
-			const touch:Touch = event.getTouch(this);
-			if(!touch)
+
+			const touches:Vector.<Touch> = event.getTouches(this);
+			if(touches.length == 0)
 			{
-				this._touchPointID = -1;
+				//end of hover
 				this.currentState = STATE_UP;
 				return;
 			}
-			if(this._touchPointID >= 0 && this._touchPointID != touch.id)
+			if(this._touchPointID >= 0)
 			{
-				return;
-			}
-			const location:Point = touch.getLocation(this);
-			ScrollRectManager.adjustTouchLocation(location, this);
-			const isInBounds:Boolean = this.hitTest(location, true) != null;
-			if(touch.phase == TouchPhase.BEGAN)
-			{
-				this.currentState = STATE_DOWN;
-				this._touchPointID = touch.id;
-				this._onPress.dispatch(this);
-			}
-			else if(touch.phase == TouchPhase.MOVED)
-			{
-				if(isInBounds || this.keepDownStateOnRollOut)
+				var touch:Touch;
+				for each(var currentTouch:Touch in touches)
 				{
-					this.currentState = STATE_DOWN;
-				}
-				else
-				{
-					this.currentState = STATE_UP;
-				}
-			}
-			else if(touch.phase == TouchPhase.ENDED)
-			{
-				this._touchPointID = -1;
-				this.currentState = STATE_UP;
-				if(isInBounds)
-				{
-					this._onRelease.dispatch(this);
-					if(this._isToggle)
+					if(currentTouch.id == this._touchPointID)
 					{
-						this.isSelected = !this._isSelected;
+						touch = currentTouch;
+						break;
 					}
 				}
+
+				if(!touch)
+				{
+					//end of hover
+					this.currentState = STATE_UP;
+					return;
+				}
+
+				var location:Point = touch.getLocation(this);
+				ScrollRectManager.adjustTouchLocation(location, this);
+				var isInBounds:Boolean = this.hitTest(location, true) != null;
+				if(touch.phase == TouchPhase.MOVED)
+				{
+					if(isInBounds || this.keepDownStateOnRollOut)
+					{
+						this.currentState = STATE_DOWN;
+					}
+					else
+					{
+						this.currentState = STATE_UP;
+					}
+					return;
+				}
+				else if(touch.phase == TouchPhase.ENDED)
+				{
+					this._touchPointID = -1;
+					if(isInBounds)
+					{
+						this._onRelease.dispatch(this);
+						if(this._isToggle)
+						{
+							this.isSelected = !this._isSelected;
+						}
+						if(this._isHoverSupported)
+						{
+							location = touch.getLocation(this);
+							location = this.localToGlobal(location);
+
+							//we need to do a new hitTest() because a display
+							//object may have appeared above this button that
+							//will prevent clearing the hover state
+							isInBounds = this.stage.hitTest(location, true) == this;
+							this.currentState = (isInBounds && this._isHoverSupported) ? STATE_HOVER : STATE_UP;
+						}
+						else
+						{
+							this.currentState = STATE_UP;
+						}
+					}
+					else
+					{
+						this.currentState = STATE_UP;
+					}
+					return;
+				}
 			}
-			else if(touch.phase == TouchPhase.HOVER)
+			else //if we get here, we don't have a saved touch ID yet
 			{
-				this.currentState = STATE_HOVER;
-				this._touchPointID = touch.id;
+				for each(touch in touches)
+				{
+					if(touch.phase == TouchPhase.BEGAN)
+					{
+						this.currentState = STATE_DOWN;
+						this._touchPointID = touch.id;
+						this._onPress.dispatch(this);
+						return;
+					}
+					else if(touch.phase == TouchPhase.HOVER)
+					{
+						this.currentState = STATE_HOVER;
+						this._isHoverSupported = true;
+						return;
+					}
+				}
 			}
 		}
 	}
