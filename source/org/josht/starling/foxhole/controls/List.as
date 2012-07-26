@@ -26,11 +26,11 @@ package org.josht.starling.foxhole.controls
 {
 	import flash.geom.Point;
 
+	import org.josht.starling.foxhole.controls.renderers.DefaultListItemRenderer;
 	import org.josht.starling.foxhole.controls.supportClasses.ListDataViewPort;
 	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.core.PropertyProxy;
 	import org.josht.starling.foxhole.data.ListCollection;
-	import org.josht.starling.foxhole.layout.HorizontalLayout;
 	import org.josht.starling.foxhole.layout.ILayout;
 	import org.josht.starling.foxhole.layout.IVirtualLayout;
 	import org.josht.starling.foxhole.layout.VerticalLayout;
@@ -41,7 +41,16 @@ package org.josht.starling.foxhole.controls
 	import starling.events.TouchEvent;
 
 	/**
-	 * Displays a one-dimensional list of items. Supports scrolling.
+	 * Displays a one-dimensional list of items. Supports scrolling, custom
+	 * item renderers, and custom layouts.
+	 *
+	 * <p>Layouts may be, and are highly encouraged to be, <em>virtual</em>,
+	 * meaning that the List is capable of creating a limited number of item
+	 * renderers to display a subset of the data provider instead of creating a
+	 * renderer for every single item. This allows for optimal performance with
+	 * very large data providers.</p>
+	 *
+	 * @see GroupedList
 	 */
 	public class List extends FoxholeControl
 	{
@@ -78,7 +87,12 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _scrollToIndex:int = -1;
+		protected var _scrollToIndex:int = -1;
+
+		/**
+		 * @private
+		 */
+		protected var _scrollToIndexDuration:Number;
 
 		/**
 		 * @private
@@ -675,7 +689,7 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _itemRendererType:Class = DefaultItemRenderer;
+		private var _itemRendererType:Class = DefaultListItemRenderer;
 		
 		/**
 		 * The class used to instantiate item renderers.
@@ -796,20 +810,23 @@ package org.josht.starling.foxhole.controls
 		}
 		
 		/**
-		 * Scrolls the list so that the specified item is visible.
+		 * Scrolls the list so that the specified item is visible. If
+		 * <code>animationDuration</code> is greater than zero, the scroll will
+		 * animate. The duration is in seconds.
 		 */
-		public function scrollToDisplayIndex(index:int):void
+		public function scrollToDisplayIndex(index:int, animationDuration:Number = 0):void
 		{
 			if(this._scrollToIndex == index)
 			{
 				return;
 			}
 			this._scrollToIndex = index;
+			this._scrollToIndexDuration = animationDuration;
 			this.invalidate(INVALIDATION_FLAG_SCROLL);
 		}
 		
 		/**
-		 * @inheritDoc
+		 * @private
 		 */
 		override public function dispose():void
 		{
@@ -821,7 +838,10 @@ package org.josht.starling.foxhole.controls
 		
 		/**
 		 * If the user is dragging the scroll, calling stopScrolling() will
-		 * cause the list to ignore the drag.
+		 * cause the list to ignore the drag. The children of the list
+		 * will still receive touches, so it's useful to call this if the
+		 * children need to support touches or dragging without the list
+		 * also scrolling.
 		 */
 		public function stopScrolling():void
 		{
@@ -849,7 +869,7 @@ package org.josht.starling.foxhole.controls
 					layout.paddingLeft = 0;
 				layout.gap = 0;
 				layout.horizontalAlign = VerticalLayout.HORIZONTAL_ALIGN_JUSTIFY;
-				layout.verticalAlign = HorizontalLayout.VERTICAL_ALIGN_TOP;
+				layout.verticalAlign = VerticalLayout.VERTICAL_ALIGN_TOP;
 				this._layout = layout;
 			}
 
@@ -974,8 +994,16 @@ package org.josht.starling.foxhole.controls
 						helperPoint.y = this._verticalScrollPosition;
 					}
 
-					this.horizontalScrollPosition = Math.max(0, Math.min(helperPoint.x, this._maxHorizontalScrollPosition));
-					this.verticalScrollPosition = Math.max(0, Math.min(helperPoint.y, this._maxVerticalScrollPosition));
+					if(this._scrollToIndexDuration > 0)
+					{
+						this.scroller.throwTo(Math.max(0, Math.min(helperPoint.x, this._maxHorizontalScrollPosition)),
+							Math.max(0, Math.min(helperPoint.y, this._maxVerticalScrollPosition)), this._scrollToIndexDuration);
+					}
+					else
+					{
+						this.horizontalScrollPosition = Math.max(0, Math.min(helperPoint.x, this._maxHorizontalScrollPosition));
+						this.verticalScrollPosition = Math.max(0, Math.min(helperPoint.y, this._maxVerticalScrollPosition));
+					}
 				}
 				this._scrollToIndex = -1;
 			}

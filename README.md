@@ -17,16 +17,22 @@ A pop-up container that points at (or calls out) a specific region of the applic
 ### Check
 A typical checkbox control with a label and selection.
 
+### GroupedList
+A hierarchical List-like control where items are divided into groups or sections, each with an optional header and an optional footer.
+
 ### Label
 A non-interactive text control. Uses bitmap fonts. A simplified replacement for `starling.text.TextField` that is built on `FoxholeControl`.
 
 ### List
 A touch-based, list control. Has elastic edges and you can "throw" it. Supports custom layouts (vertical by default) and custom item renderers (with a robust default renderer that can customize the label, icon, and an "accessory" view based on the item data).
 
+### PageIndicator
+Displays a selected index, usually corresponding to a page index in another UI control, using a highlighted symbol.
+
 ### PickerList
 A control similar to a combo box. Appears as a button when closed. The list is displayed as a fullscreen overlay on top of the stage.
 
-### Progress Bar
+### ProgressBar
 Displays the progress of a task over time. Non-interactive.
 
 ### Radio

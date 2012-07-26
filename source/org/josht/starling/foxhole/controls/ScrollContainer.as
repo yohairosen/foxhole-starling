@@ -28,6 +28,7 @@ package org.josht.starling.foxhole.controls
 	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.core.PropertyProxy;
 	import org.josht.starling.foxhole.layout.ILayout;
+	import org.josht.starling.foxhole.layout.IVirtualLayout;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
 	
@@ -402,6 +403,22 @@ package org.josht.starling.foxhole.controls
 		}
 
 		/**
+		 * If the user is dragging the scroll, calling stopScrolling() will
+		 * cause the container to ignore the drag. The children of the container
+		 * will still receive touches, so it's useful to call this if the
+		 * children need to support touches or dragging without the container
+		 * also scrolling.
+		 */
+		public function stopScrolling():void
+		{
+			if(!this.scroller)
+			{
+				return;
+			}
+			this.scroller.stopScrolling();
+		}
+
+		/**
 		 * @private
 		 */
 		override protected function initialize():void
@@ -428,6 +445,10 @@ package org.josht.starling.foxhole.controls
 
 			if(dataInvalid)
 			{
+				if(this._layout is IVirtualLayout)
+				{
+					IVirtualLayout(this._layout).useVirtualLayout = false;
+				}
 				this.viewPort.layout = this._layout;
 			}
 
