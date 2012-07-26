@@ -30,7 +30,7 @@ package org.josht.starling.foxhole.controls
 	import org.josht.starling.foxhole.layout.ILayout;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
-
+	
 	import starling.display.DisplayObject;
 
 	/**
@@ -347,17 +347,17 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		override public function addChildAt(child:DisplayObject, index:int):void
+		override public function addChildAt(child:DisplayObject, index:int):DisplayObject
 		{
-			this.viewPort.addChildAt(child, index);
+			return this.viewPort.addChildAt(child, index);
 		}
 
 		/**
 		 * @private
 		 */
-		override public function removeChildAt(index:int, dispose:Boolean = false):void
+		override public function removeChildAt(index:int, dispose:Boolean = false):DisplayObject
 		{
-			this.viewPort.removeChildAt(index, dispose);
+			return this.viewPort.removeChildAt(index, dispose);
 		}
 
 		/**
