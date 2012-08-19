@@ -58,7 +58,7 @@ package org.josht.starling.foxhole.controls
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.textures.Texture;
-	import starling.utils.transformCoords;
+	import starling.utils.MatrixUtil;
 
 	/**
 	 * A text entry control that allows users to enter and edit a single line of
@@ -440,13 +440,13 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _stageTextProperties:PropertyProxy = new PropertyProxy(stageTextProperties_onChange);
+		private var _stageTextProperties:PropertyProxy;
 
 		/**
 		 * A set of key/value pairs to be passed down to the text input's
 		 * StageText instance.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -455,6 +455,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get stageTextProperties():Object
 		{
+			if(!this._stageTextProperties)
+			{
+				this._stageTextProperties = new PropertyProxy(stageTextProperties_onChange);
+			}
 			return this._stageTextProperties;
 		}
 
@@ -523,7 +527,7 @@ package org.josht.starling.foxhole.controls
 			super.render(support, alpha);
 			helperPoint.x = helperPoint.y = 0;
 			this.getTransformationMatrix(this.stage, helperMatrix);
-			transformCoords(helperMatrix, 0, 0, helperPoint);
+			MatrixUtil.transformCoords(helperMatrix, 0, 0, helperPoint);
 			ScrollRectManager.toStageCoordinates(helperPoint, this);
 			if(helperPoint.x != this._oldGlobalX || helperPoint.y != this._oldGlobalY)
 			{
@@ -782,18 +786,18 @@ package org.josht.starling.foxhole.controls
 					}
 					else //desktop
 					{
-						const location:Point = touch.getLocation(this);
-						location.x -= this._paddingLeft;
-						location.y -= this._paddingTop;
-						if(location.x < 0)
+						touch.getLocation(this, helperPoint);
+						helperPoint.x -= this._paddingLeft;
+						helperPoint.y -= this._paddingTop;
+						if(helperPoint.x < 0)
 						{
 							this._savedSelectionIndex = 0;
 						}
 						else
 						{
-							this._savedSelectionIndex = this._measureTextField.getCharIndexAtPoint(location.x, location.y);
+							this._savedSelectionIndex = this._measureTextField.getCharIndexAtPoint(helperPoint.x, helperPoint.y);
 							const bounds:Rectangle = this._measureTextField.getCharBoundaries(this._savedSelectionIndex);
-							if(bounds && (bounds.x + bounds.width - location.x) < (location.x - bounds.x))
+							if(bounds && (bounds.x + bounds.width - helperPoint.x) < (helperPoint.x - bounds.x))
 							{
 								this._savedSelectionIndex++;
 							}
@@ -837,7 +841,7 @@ package org.josht.starling.foxhole.controls
 
 			helperPoint.x = helperPoint.y = 0;
 			this.getTransformationMatrix(this.stage, helperMatrix);
-			transformCoords(helperMatrix, 0, 0, helperPoint);
+			MatrixUtil.transformCoords(helperMatrix, 0, 0, helperPoint);
 			ScrollRectManager.toStageCoordinates(helperPoint, this);
 			this._oldGlobalX = helperPoint.x;
 			this._oldGlobalY = helperPoint.y;
@@ -905,6 +909,8 @@ package org.josht.starling.foxhole.controls
 		{
 			Starling.current.nativeStage.removeChild(this._measureTextField);
 
+			this._touchPointID = -1;
+
 			this.stageText.removeEventListener(Event.CHANGE, stageText_changeHandler);
 			this.stageText.removeEventListener(KeyboardEvent.KEY_DOWN, stageText_keyDownHandler);
 			this.stageText.removeEventListener(FocusEvent.FOCUS_IN, stageText_focusInHandler);
@@ -960,9 +966,9 @@ package org.josht.starling.foxhole.controls
 				if(touch.phase == TouchPhase.ENDED)
 				{
 					this._touchPointID = -1;
-					var location:Point = touch.getLocation(this);
-					ScrollRectManager.adjustTouchLocation(location, this);
-					var isInBounds:Boolean = this.hitTest(location, true) != null;
+					touch.getLocation(this, helperPoint);
+					ScrollRectManager.adjustTouchLocation(helperPoint, this);
+					var isInBounds:Boolean = this.hitTest(helperPoint, true) != null;
 					if(!this._stageTextHasFocus && isInBounds)
 					{
 						this.setFocusInternal(touch);

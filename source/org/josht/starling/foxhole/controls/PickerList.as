@@ -39,6 +39,7 @@ package org.josht.starling.foxhole.controls
 
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
+	import starling.events.Event;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
@@ -50,22 +51,28 @@ package org.josht.starling.foxhole.controls
 	public class PickerList extends FoxholeControl
 	{
 		/**
+		 * @private
+		 */
+		private static const HELPER_POINT:Point = new Point();
+
+		/**
 		 * Constructor.
 		 */
 		public function PickerList()
 		{
 			super();
+			this.addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler);
 		}
 
 		/**
 		 * The value added to the <code>nameList</code> of the button.
 		 */
-		protected var defaultButtonName:String = "foxhole-pickerlist-button";
+		protected var defaultButtonName:String = "foxhole-picker-list-button";
 
 		/**
 		 * The value added to the <code>nameList</code> of the pop-up list.
 		 */
-		protected var defaultListName:String = "foxhole-pickerlist-list";
+		protected var defaultListName:String = "foxhole-picker-list-list";
 		
 		private var _button:Button;
 		private var _list:List;
@@ -310,13 +317,13 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _buttonProperties:PropertyProxy = new PropertyProxy(buttonProperties_onChange);
+		private var _buttonProperties:PropertyProxy;
 		
 		/**
 		 * A set of key/value pairs to be passed down to the picker's button
 		 * instance. It is a Foxhole Button control.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -325,6 +332,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get buttonProperties():Object
 		{
+			if(!this._buttonProperties)
+			{
+				this._buttonProperties = new PropertyProxy(buttonProperties_onChange);
+			}
 			return this._buttonProperties;
 		}
 		
@@ -365,13 +376,13 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _listProperties:PropertyProxy = new PropertyProxy(listProperties_onChange);
+		private var _listProperties:PropertyProxy;
 		
 		/**
 		 * A set of key/value pairs to be passed down to the picker's internal
 		 * List instance. The track is a Foxhole Button control.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -380,6 +391,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get listProperties():Object
 		{
+			if(!this._listProperties)
+			{
+				this._listProperties = new PropertyProxy(listProperties_onChange);
+			}
 			return this._listProperties;
 		}
 		
@@ -724,14 +739,26 @@ package org.josht.starling.foxhole.controls
 			{
 				return;
 			}
-			const location:Point = touch.getLocation(displayRenderer);
-			ScrollRectManager.adjustTouchLocation(location, displayRenderer);
-			if(displayRenderer.hitTest(location, true))
+			touch.getLocation(displayRenderer, HELPER_POINT);
+			ScrollRectManager.adjustTouchLocation(HELPER_POINT, displayRenderer);
+			if(displayRenderer.hitTest(HELPER_POINT, true))
 			{
 				this.closePopUpList();
 			}
 		}
 
+		/**
+		 * @private
+		 */
+		protected function removedFromStageHandler(event:Event):void
+		{
+			this._buttonTouchPointID = -1;
+			this._listTouchPointID = -1;
+		}
+
+		/**
+		 * @private
+		 */
 		protected function button_touchHandler(event:TouchEvent):void
 		{
 			const touches:Vector.<Touch> = event.getTouches(this._button);

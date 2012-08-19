@@ -25,9 +25,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 package org.josht.starling.foxhole.controls
 {
 	import flash.geom.Point;
-	
+
 	import org.josht.starling.foxhole.controls.renderers.DefaultListItemRenderer;
-	import org.josht.starling.foxhole.controls.renderers.IListItemRenderer;
 	import org.josht.starling.foxhole.controls.supportClasses.ListDataViewPort;
 	import org.josht.starling.foxhole.core.FoxholeControl;
 	import org.josht.starling.foxhole.core.PropertyProxy;
@@ -37,7 +36,7 @@ package org.josht.starling.foxhole.controls
 	import org.josht.starling.foxhole.layout.VerticalLayout;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
-	
+
 	import starling.display.DisplayObject;
 	import starling.events.TouchEvent;
 
@@ -171,6 +170,20 @@ package org.josht.starling.foxhole.controls
 		{
 			return this._maxHorizontalScrollPosition;
 		}
+
+		/**
+		 * @private
+		 */
+		protected var _horizontalPageIndex:int = 0;
+
+		/**
+		 * The index of the horizontal page, if snapping is enabled. If snapping
+		 * is disabled, the index will always be <code>0</code>.
+		 */
+		public function get horizontalPageIndex():int
+		{
+			return this._horizontalPageIndex;
+		}
 		
 		/**
 		 * @private
@@ -202,6 +215,20 @@ package org.josht.starling.foxhole.controls
 			this._verticalScrollPosition = value;
 			this.invalidate(INVALIDATION_FLAG_SCROLL);
 			this._onScroll.dispatch(this);
+		}
+
+		/**
+		 * @private
+		 */
+		protected var _verticalPageIndex:int = 0;
+
+		/**
+		 * The index of the vertical page, if snapping is enabled. If snapping
+		 * is disabled, the index will always be <code>0</code>.
+		 */
+		public function get verticalPageIndex():int
+		{
+			return this._verticalPageIndex;
 		}
 		
 		/**
@@ -253,9 +280,6 @@ package org.josht.starling.foxhole.controls
 			if(this._dataProvider)
 			{
 				this._dataProvider.onReset.add(dataProvider_onReset);
-			}
-			else{
-				this.dataViewPort.dataProvider = null;
 			}
 
 			//reset the scroll position because this is a drastic change and
@@ -390,13 +414,13 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _scrollerProperties:PropertyProxy = new PropertyProxy(scrollerProperties_onChange);
+		private var _scrollerProperties:PropertyProxy;
 		
 		/**
 		 * A set of key/value pairs to be passed down to the list's scroller
 		 * instance. The scroller is a Foxhole Scroller control.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -405,6 +429,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get scrollerProperties():Object
 		{
+			if(!this._scrollerProperties)
+			{
+				this._scrollerProperties = new PropertyProxy(scrollerProperties_onChange);
+			}
 			return this._scrollerProperties;
 		}
 		
@@ -417,18 +445,9 @@ package org.josht.starling.foxhole.controls
 			{
 				return;
 			}
-			if(!value)
+			if(value && !(value is PropertyProxy))
 			{
-				value = new PropertyProxy();
-			}
-			if(!(value is PropertyProxy))
-			{
-				const newValue:PropertyProxy = new PropertyProxy();
-				for(var propertyName:String in value)
-				{
-					newValue[propertyName] = value[propertyName];
-				}
-				value = newValue;
+				value = PropertyProxy.fromObject(value);
 			}
 			if(this._scrollerProperties)
 			{
@@ -445,7 +464,7 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _itemRendererProperties:PropertyProxy = new PropertyProxy(itemRendererProperties_onChange);
+		private var _itemRendererProperties:PropertyProxy;
 
 		/**
 		 * A set of key/value pairs to be passed down to all of the list's item
@@ -454,7 +473,7 @@ package org.josht.starling.foxhole.controls
 		 * to the display list) should be passed to the item renderers using an
 		 * <code>itemRendererFactory</code> or with a theme.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -465,6 +484,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get itemRendererProperties():Object
 		{
+			if(!this._itemRendererProperties)
+			{
+				this._itemRendererProperties = new PropertyProxy(itemRendererProperties_onChange);
+			}
 			return this._itemRendererProperties;
 		}
 
@@ -853,10 +876,6 @@ package org.josht.starling.foxhole.controls
 			this.scroller.stopScrolling();
 		}
 		
-		public function getRendererByIndex(value:int):IListItemRenderer {
-			return dataViewPort.getRendererByIndex(value);
-		}
-		
 		/**
 		 * @private
 		 */
@@ -970,6 +989,8 @@ package org.josht.starling.foxhole.controls
 			this._maxVerticalScrollPosition = this.scroller.maxVerticalScrollPosition;
 			this._horizontalScrollPosition = this.scroller.horizontalScrollPosition;
 			this._verticalScrollPosition = this.scroller.verticalScrollPosition;
+			this._horizontalPageIndex = this.scroller.horizontalPageIndex;
+			this._verticalPageIndex = this.scroller.verticalPageIndex;
 
 			if(this._scrollToIndex >= 0)
 			{
@@ -1109,8 +1130,12 @@ package org.josht.starling.foxhole.controls
 		{
 			this._maxHorizontalScrollPosition = this.scroller.maxHorizontalScrollPosition;
 			this._maxVerticalScrollPosition = this.scroller.maxVerticalScrollPosition;
-			this.horizontalScrollPosition = this.scroller.horizontalScrollPosition;
-			this.verticalScrollPosition = this.scroller.verticalScrollPosition;
+			this._horizontalPageIndex = this.scroller.horizontalPageIndex;
+			this._verticalPageIndex = this.scroller.verticalPageIndex;
+			this._horizontalScrollPosition = this.scroller.horizontalScrollPosition;
+			this._verticalScrollPosition = this.scroller.verticalScrollPosition;
+			this.invalidate(INVALIDATION_FLAG_SCROLL);
+			this._onScroll.dispatch(this);
 		}
 		
 		/**

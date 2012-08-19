@@ -31,7 +31,7 @@ package org.josht.starling.foxhole.controls
 	import org.josht.starling.foxhole.layout.IVirtualLayout;
 	import org.osflash.signals.ISignal;
 	import org.osflash.signals.Signal;
-	
+
 	import starling.display.DisplayObject;
 
 	/**
@@ -256,13 +256,13 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _scrollerProperties:PropertyProxy = new PropertyProxy(scrollerProperties_onChange);
+		private var _scrollerProperties:PropertyProxy;
 
 		/**
 		 * A set of key/value pairs to be passed down to the container's scroller
 		 * instance. The scroller is a Foxhole Scroller control.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -271,6 +271,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get scrollerProperties():Object
 		{
+			if(!this._scrollerProperties)
+			{
+				this._scrollerProperties = new PropertyProxy(scrollerProperties_onChange);
+			}
 			return this._scrollerProperties;
 		}
 

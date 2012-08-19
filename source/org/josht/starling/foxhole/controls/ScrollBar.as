@@ -37,6 +37,7 @@ package org.josht.starling.foxhole.controls
 	import org.osflash.signals.Signal;
 
 	import starling.display.DisplayObject;
+	import starling.events.Event;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
@@ -47,6 +48,11 @@ package org.josht.starling.foxhole.controls
 	 */
 	public class ScrollBar extends FoxholeControl implements IScrollBar
 	{
+		/**
+		 * @private
+		 */
+		private static const HELPER_POINT:Point = new Point();
+
 		/**
 		 * The scroll bar's thumb may be dragged horizontally (on the x-axis).
 		 */
@@ -85,6 +91,7 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function ScrollBar()
 		{
+			this.addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler);
 		}
 
 		/**
@@ -550,13 +557,13 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _minimumTrackProperties:PropertyProxy = new PropertyProxy(minimumTrackProperties_onChange);
+		private var _minimumTrackProperties:PropertyProxy;
 
 		/**
 		 * A set of key/value pairs to be passed down to the scroll bar's
 		 * minimum track instance. The track is a Foxhole Button control.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -565,6 +572,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get minimumTrackProperties():Object
 		{
+			if(!this._minimumTrackProperties)
+			{
+				this._minimumTrackProperties = new PropertyProxy(minimumTrackProperties_onChange);
+			}
 			return this._minimumTrackProperties;
 		}
 
@@ -605,13 +616,13 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _maximumTrackProperties:PropertyProxy = new PropertyProxy(maximumTrackProperties_onChange);
+		private var _maximumTrackProperties:PropertyProxy;
 
 		/**
 		 * A set of key/value pairs to be passed down to the scroll bar's
 		 * maximum track instance. The track is a Foxhole Button control.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -620,6 +631,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get maximumTrackProperties():Object
 		{
+			if(!this._maximumTrackProperties)
+			{
+				this._maximumTrackProperties = new PropertyProxy(maximumTrackProperties_onChange);
+			}
 			return this._maximumTrackProperties;
 		}
 
@@ -660,13 +675,13 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _thumbProperties:PropertyProxy = new PropertyProxy(thumbProperties_onChange);
+		private var _thumbProperties:PropertyProxy;
 
 		/**
 		 * A set of key/value pairs to be passed down to the scroll bar's thumb
 		 * instance. The thumb is a Foxhole Button control.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -675,6 +690,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get thumbProperties():Object
 		{
+			if(!this._thumbProperties)
+			{
+				this._thumbProperties = new PropertyProxy(thumbProperties_onChange);
+			}
 			return this._thumbProperties;
 		}
 
@@ -715,13 +734,13 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _decrementButtonProperties:PropertyProxy = new PropertyProxy(decrementButtonProperties_onChange);
+		private var _decrementButtonProperties:PropertyProxy;
 
 		/**
 		 * A set of key/value pairs to be passed down to the scroll bar's thumb
 		 * instance. The thumb is a Foxhole Button control.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -730,6 +749,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get decrementButtonProperties():Object
 		{
+			if(!this._decrementButtonProperties)
+			{
+				this._decrementButtonProperties = new PropertyProxy(decrementButtonProperties_onChange);
+			}
 			return this._decrementButtonProperties;
 		}
 
@@ -770,14 +793,14 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
-		private var _incrementButtonProperties:PropertyProxy = new PropertyProxy(incrementButtonProperties_onChange);
+		private var _incrementButtonProperties:PropertyProxy;
 
 		/**
 		 * A set of key/value pairs to be passed down to the scroll bar's
 		 * increment button instance. The increment button is a Foxhole Button
 		 * control.
 		 *
-		 * <p>If the sub-component has its own sub-components, their properties
+		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
 		 * to set the skin on the thumb of a <code>SimpleScrollBar</code>
 		 * which is in a <code>Scroller</code> which is in a <code>List</code>,
@@ -786,6 +809,10 @@ package org.josht.starling.foxhole.controls
 		 */
 		public function get incrementButtonProperties():Object
 		{
+			if(!this._incrementButtonProperties)
+			{
+				this._incrementButtonProperties = new PropertyProxy(incrementButtonProperties_onChange);
+			}
 			return this._incrementButtonProperties;
 		}
 
@@ -1490,6 +1517,18 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * @private
 		 */
+		protected function removedFromStageHandler(event:Event):void
+		{
+			this._touchPointID = -1;
+			if(this._repeatTimer)
+			{
+				this._repeatTimer.stop();
+			}
+		}
+
+		/**
+		 * @private
+		 */
 		protected function track_touchHandler(event:TouchEvent):void
 		{
 			if(!this._isEnabled)
@@ -1531,12 +1570,12 @@ package org.josht.starling.foxhole.controls
 					if(touch.phase == TouchPhase.BEGAN)
 					{
 						this._touchPointID = touch.id;
-						const location:Point = touch.getLocation(this);
-						this._touchStartX = location.x;
-						this._touchStartY = location.y;
-						this._thumbStartX = location.x;
-						this._thumbStartY = location.y;
-						this._touchValue = this.locationToValue(location);
+						touch.getLocation(this, HELPER_POINT);
+						this._touchStartX = HELPER_POINT.x;
+						this._touchStartY = HELPER_POINT.y;
+						this._thumbStartX = HELPER_POINT.x;
+						this._thumbStartY = HELPER_POINT.y;
+						this._touchValue = this.locationToValue(HELPER_POINT);
 						this.adjustPage();
 						this.startRepeatTimer(this.adjustPage);
 						return;
@@ -1576,8 +1615,8 @@ package org.josht.starling.foxhole.controls
 				}
 				if(touch.phase == TouchPhase.MOVED)
 				{
-					var location:Point = touch.getLocation(this);
-					var newValue:Number = this.locationToValue(location);
+					touch.getLocation(this, HELPER_POINT);
+					var newValue:Number = this.locationToValue(HELPER_POINT);
 					if(this._step != 0)
 					{
 						newValue = roundToNearest(newValue, this._step);
@@ -1603,12 +1642,12 @@ package org.josht.starling.foxhole.controls
 				{
 					if(touch.phase == TouchPhase.BEGAN)
 					{
-						location = touch.getLocation(this);
+						touch.getLocation(this, HELPER_POINT);
 						this._touchPointID = touch.id;
 						this._thumbStartX = this.thumb.x;
 						this._thumbStartY = this.thumb.y;
-						this._touchStartX = location.x;
-						this._touchStartY = location.y;
+						this._touchStartX = HELPER_POINT.x;
+						this._touchStartY = HELPER_POINT.y;
 						this.isDragging = true;
 						this._onDragStart.dispatch(this);
 						return;

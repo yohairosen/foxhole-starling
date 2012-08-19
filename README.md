@@ -69,7 +69,7 @@ A sliding on/off switch. A common alternative to a checkbox in mobile environmen
 
 The following external libraries are required. Other versions of the same library may work, but the version displayed below is the one currently recommended by the author.
 
-* [Starling](http://gamua.com/starling/) v1.1
+* [Starling](http://gamua.com/starling/) v1.2 RC (from Github)
 * [GTween](http://gskinner.com/libraries/gtween/) v2.01
 * [as3-signals](https://github.com/robertpenner/as3-signals) v0.9 BETA
 
@@ -78,11 +78,11 @@ The following external libraries are required. Other versions of the same librar
 * [Foxhole for Starling Examples](https://github.com/joshtynjala/foxhole-starling-examples)
 * [API Documentation](http://www.flashtoolbox.com/foxhole-starling/documentation/)
 * [Wiki](https://github.com/joshtynjala/foxhole-starling/wiki)
-* [Official Foxhole Q&A thread on the Starling Forums](http://forum.starling-framework.org/topic/official-foxhole-components-qa)
+* [Foxhole section on the Starling Forums](http://forum.starling-framework.org/forum/foxhole)
 
 ## Important Note
 
-The core architecture and non-private APIs of Foxhole for Starling are still under active design and development. Basically, for the time being, absolutely everything is subject to change, and updating to a new revision is often likely to result in broken content. If something breaks after you update to the latest revision, and you can't figure out the new way to do what you were doing before, please ask in the [Q&A thread](http://forum.starling-framework.org/topic/official-foxhole-components-qa) that I started in the Starling Forum.
+The core architecture and non-private APIs of Foxhole for Starling are still under active design and development. Basically, for the time being, absolutely everything is subject to change, and updating to a new revision is often likely to result in broken content. If something breaks after you update to the latest revision, and you can't figure out the new way to do what you were doing before, please ask in the [Foxhole Sub-Forum](http://forum.starling-framework.org/forum/foxhole) over at the Starling Forums.
 
 ## Tips
 

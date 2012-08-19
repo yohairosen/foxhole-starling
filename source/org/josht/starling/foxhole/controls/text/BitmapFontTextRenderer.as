@@ -22,13 +22,14 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
-package org.josht.starling.foxhole.controls
+package org.josht.starling.foxhole.controls.text
 {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 
 	import org.josht.starling.foxhole.core.FoxholeControl;
+	import org.josht.starling.foxhole.core.ITextRenderer;
 	import org.josht.starling.foxhole.text.BitmapFontTextFormat;
 
 	import starling.core.RenderSupport;
@@ -39,10 +40,9 @@ package org.josht.starling.foxhole.controls
 	import starling.textures.TextureSmoothing;
 
 	/**
-	 * Displays bitmap text. Automatically resizes itself. Can be truncated to a
-	 * maximum width.
+	 * Renders text using bitmap fonts.
 	 */
-	public class Label extends FoxholeControl
+	public class BitmapFontTextRenderer extends FoxholeControl implements ITextRenderer
 	{
 		/**
 		 * @private
@@ -57,7 +57,7 @@ package org.josht.starling.foxhole.controls
 		/**
 		 * Constructor.
 		 */
-		public function Label()
+		public function BitmapFontTextRenderer()
 		{
 			this.isQuickHitAreaEnabled = true;
 		}
@@ -232,6 +232,21 @@ package org.josht.starling.foxhole.controls
 		}
 
 		/**
+		 * @inheritDoc
+		 */
+		public function get baseline():Number
+		{
+			if(!this._textFormat)
+			{
+				return 0;
+			}
+			const font:BitmapFont = this._textFormat.font;
+			const formatSize:Number = this._textFormat.size;
+			const fontSizeScale:Number = isNaN(formatSize) ? 1 : (formatSize / font.size);
+			return font.baseline * fontSizeScale;
+		}
+
+		/**
 		 * @private
 		 */
 		override public function render(support:RenderSupport, alpha:Number):void
@@ -256,7 +271,7 @@ package org.josht.starling.foxhole.controls
 		}
 		
 		/**
-		 * Measures the label's text without a full validation.
+		 * @inheritDoc
 		 */
 		public function measureText(result:Point = null):Point
 		{

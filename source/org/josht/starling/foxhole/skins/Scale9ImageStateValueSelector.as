@@ -32,30 +32,50 @@ package org.josht.starling.foxhole.skins
 	 * attempts to reuse the existing Scale9Image instance that is passed in to
 	 * getValueForState() as the old value by swapping the textures.
 	 */
-	public class Scale9ImageStateValueManager extends StateValueManager
+	public class Scale9ImageStateValueSelector extends StateWithToggleValueSelector
 	{
 		/**
 		 * Constructor.
 		 */
-		public function Scale9ImageStateValueManager()
+		public function Scale9ImageStateValueSelector()
 		{
 		}
 
 		/**
+		 * @private
+		 */
+		protected var _imageProperties:Object;
+
+		/**
 		 * Optional properties to set on the Scale9Image instance.
 		 */
-		public var imageProperties:Object;
+		public function get imageProperties():Object
+		{
+			if(!this._imageProperties)
+			{
+				this._imageProperties = {};
+			}
+			return this._imageProperties;
+		}
 
 		/**
 		 * @private
 		 */
-		override public function setValueForState(state:Object, value:Object):void
+		public function set imageProperties(value:Object):void
+		{
+			this._imageProperties = value;
+		}
+
+		/**
+		 * @private
+		 */
+		override public function setValueForState(value:Object, state:Object, isSelected:Boolean = false):void
 		{
 			if(!(value is Scale9Textures))
 			{
 				throw new ArgumentError("Value for state must be a Scale9Textures instance.");
 			}
-			super.setValueForState(state, value);
+			super.setValueForState(value, state, isSelected);
 		}
 
 		/**
@@ -80,15 +100,12 @@ package org.josht.starling.foxhole.skins
 				image = new Scale9Image(textures);
 			}
 
-			if(this.imageProperties)
+			for(var propertyName:String in this._imageProperties)
 			{
-				for(var propertyName:String in this.imageProperties)
+				if(image.hasOwnProperty(propertyName))
 				{
-					if(image.hasOwnProperty(propertyName))
-					{
-						var propertyValue:Object = this.imageProperties[propertyName];
-						image[propertyName] = propertyValue;
-					}
+					var propertyValue:Object = this._imageProperties[propertyName];
+					image[propertyName] = propertyValue;
 				}
 			}
 

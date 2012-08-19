@@ -25,10 +25,11 @@
 package org.josht.starling.foxhole.controls.renderers
 {
 	import flash.events.TimerEvent;
+	import flash.geom.Point;
 	import flash.utils.Timer;
 
 	import org.josht.starling.foxhole.controls.Button;
-	import org.josht.starling.foxhole.controls.Label;
+	import org.josht.starling.foxhole.controls.text.BitmapFontTextRenderer;
 	import org.josht.starling.foxhole.core.FoxholeControl;
 
 	import starling.display.DisplayObject;
@@ -41,6 +42,8 @@ package org.josht.starling.foxhole.controls.renderers
 	 */
 	public class BaseDefaultItemRenderer extends Button
 	{
+		private static const helperPoint:Point = new Point();
+
 		/**
 		 * @private
 		 */
@@ -57,9 +60,9 @@ package org.josht.starling.foxhole.controls.renderers
 		/**
 		 * @private
 		 */
-		protected static function defaultLabelFactory():Label
+		protected static function defaultLabelFactory():BitmapFontTextRenderer
 		{
-			return new Label();
+			return new BitmapFontTextRenderer();
 		}
 
 		/**
@@ -85,7 +88,7 @@ package org.josht.starling.foxhole.controls.renderers
 		/**
 		 * @private
 		 */
-		protected var accessoryLabel:Label;
+		protected var accessoryLabel:BitmapFontTextRenderer;
 
 		/**
 		 * @private
@@ -167,7 +170,7 @@ package org.josht.starling.foxhole.controls.renderers
 			}
 			else if(this._useStateDelayTimer &&
 				(!this._stateDelayTimer || !this._stateDelayTimer.running) &&
-				(value == Button.STATE_DOWN || value == Button.STATE_SELECTED_DOWN))
+				(value == Button.STATE_DOWN))
 			{
 				this._delayedCurrentState = value;
 				if(this._stateDelayTimer)
@@ -998,6 +1001,101 @@ package org.josht.starling.foxhole.controls.renderers
 		/**
 		 * @private
 		 */
+		override protected function autoSizeIfNeeded():Boolean
+		{
+			const needsWidth:Boolean = isNaN(this.explicitWidth);
+			const needsHeight:Boolean = isNaN(this.explicitHeight);
+			if(!needsWidth && !needsHeight)
+			{
+				return false;
+			}
+			this.labelControl.measureText(helperPoint);
+			if(this.accessory is FoxholeControl)
+			{
+				FoxholeControl(this.accessory).validate();
+			}
+			var newWidth:Number = this.explicitWidth;
+			if(needsWidth)
+			{
+				if(this.currentIcon && this.label)
+				{
+					if(this._iconPosition != ICON_POSITION_TOP && this._iconPosition != ICON_POSITION_BOTTOM)
+					{
+						var adjustedGap:Number = this._gap == Number.POSITIVE_INFINITY ? Math.min(this._paddingLeft, this._paddingRight) : this._gap;
+						newWidth = this.currentIcon.width + adjustedGap + helperPoint.x;
+					}
+					else
+					{
+						newWidth = Math.max(this.currentIcon.width, helperPoint.x);
+					}
+				}
+				else if(this.currentIcon)
+				{
+					newWidth = this.currentIcon.width;
+				}
+				else if(this.label)
+				{
+					newWidth = helperPoint.x;
+				}
+				if(this.accessory)
+				{
+					newWidth += this.accessory.width
+				}
+				newWidth += this._paddingLeft + this._paddingRight;
+				if(isNaN(newWidth))
+				{
+					newWidth = this._originalSkinWidth;
+				}
+				else if(!isNaN(this._originalSkinWidth))
+				{
+					newWidth = Math.max(newWidth, this._originalSkinWidth);
+				}
+			}
+
+			var newHeight:Number = this.explicitHeight;
+			if(needsHeight)
+			{
+				if(this.currentIcon && this.label)
+				{
+					if(this._iconPosition == ICON_POSITION_TOP || this._iconPosition == ICON_POSITION_BOTTOM)
+					{
+						adjustedGap = this._gap == Number.POSITIVE_INFINITY ? Math.min(this._paddingTop, this._paddingBottom) : this._gap;
+						newHeight = this.currentIcon.height + adjustedGap + helperPoint.y;
+					}
+					else
+					{
+						newHeight = Math.max(this.currentIcon.height, helperPoint.y);
+					}
+				}
+				else if(this.currentIcon)
+				{
+					newHeight = this.currentIcon.height;
+				}
+				else if(this.label)
+				{
+					newHeight = helperPoint.y;
+				}
+				if(this.accessory)
+				{
+					newHeight = Math.max(newHeight, this.accessory.height);
+				}
+				newHeight += this._paddingTop + this._paddingBottom;
+				if(isNaN(newHeight))
+				{
+					newHeight = this._originalSkinHeight;
+				}
+				else if(!isNaN(this._originalSkinHeight))
+				{
+					newHeight = Math.max(newHeight, this._originalSkinHeight);
+				}
+			}
+
+			return this.setSizeInternal(newWidth, newHeight, false);
+		}
+
+		/**
+		 * @private
+		 */
 		protected function commitData():void
 		{
 			if(this._owner)
@@ -1015,7 +1113,7 @@ package org.josht.starling.foxhole.controls.renderers
 					this.accessory = newAccessory;
 					if(this.accessory)
 					{
-						if(this.accessory is FoxholeControl && !(this.accessory is Label))
+						if(this.accessory is FoxholeControl && !(this.accessory is BitmapFontTextRenderer))
 						{
 							this.accessory.addEventListener(TouchEvent.TOUCH, accessory_touchHandler);
 						}
@@ -1126,10 +1224,9 @@ package org.josht.starling.foxhole.controls.renderers
 		 */
 		protected function handleOwnerScroll():void
 		{
-			const state:String = this.isSelected ? Button.STATE_SELECTED_UP : Button.STATE_UP;
-			if(this._currentState != state)
+			if(this._currentState != Button.STATE_UP)
 			{
-				super.currentState = state;
+				super.currentState = Button.STATE_UP;
 			}
 			this._touchPointID = -1;
 			if(!this._stateDelayTimer || !this._stateDelayTimer.running)

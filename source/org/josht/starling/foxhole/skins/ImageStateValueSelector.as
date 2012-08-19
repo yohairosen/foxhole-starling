@@ -32,30 +32,50 @@ package org.josht.starling.foxhole.skins
 	 * reuse the existing Image instance that is passed in to getValueForState()
 	 * as the old value by swapping the texture.
 	 */
-	public class ImageStateValueManager extends StateValueManager
+	public class ImageStateValueSelector extends StateWithToggleValueSelector
 	{
 		/**
 		 * Constructor.
 		 */
-		public function ImageStateValueManager()
+		public function ImageStateValueSelector()
 		{
 		}
 
 		/**
+		 * @private
+		 */
+		protected var _imageProperties:Object;
+
+		/**
 		 * Optional properties to set on the Image instance.
 		 */
-		public var imageProperties:Object;
+		public function get imageProperties():Object
+		{
+			if(!this._imageProperties)
+			{
+				this._imageProperties = {};
+			}
+			return this._imageProperties;
+		}
 
 		/**
 		 * @private
 		 */
-		override public function setValueForState(state:Object, value:Object):void
+		public function set imageProperties(value:Object):void
+		{
+			this._imageProperties = value;
+		}
+
+		/**
+		 * @private
+		 */
+		override public function setValueForState(value:Object, state:Object, isSelected:Boolean = false):void
 		{
 			if(!(value is Texture))
 			{
 				throw new ArgumentError("Value for state must be a Texture instance.");
 			}
-			super.setValueForState(state, value);
+			super.setValueForState(value, state, isSelected);
 		}
 
 		/**
@@ -80,15 +100,12 @@ package org.josht.starling.foxhole.skins
 				image = new Image(texture);
 			}
 
-			if(this.imageProperties)
+			for(var propertyName:String in this._imageProperties)
 			{
-				for(var propertyName:String in this.imageProperties)
+				if(image.hasOwnProperty(propertyName))
 				{
-					if(image.hasOwnProperty(propertyName))
-					{
-						var propertyValue:Object = this.imageProperties[propertyName];
-						image[propertyName] = propertyValue;
-					}
+					var propertyValue:Object = this._imageProperties[propertyName];
+					image[propertyName] = propertyValue;
 				}
 			}
 
